@@ -36,10 +36,10 @@ class Index extends Controller
         $code = -1;
         $message = '';
         $file = request()->file('video');
-        $info = $file->move( '../uploads');
+        $info = $file->move('../public/uploads');
         if($info){
             $code = 200;
-            $data = ['uploaded_video_name' => $info->getFilename(), 'user_email' => $userName];
+            $data = ['uploaded_video_name' => $info->getSaveName(), 'user_email' => $userName];
             Db::name('uploaded_videos')
                 ->data($data)
                 ->insert();
@@ -48,6 +48,21 @@ class Index extends Controller
             $code = 401;
             $message = $file->getError();
         }
+        return ['data'=>$data,'code'=>$code,'message'=>$message];
+    }
+    public function playVideo($userName=''){
+        $code = -1;
+        $message = '';
+        $has = Db::table('uploaded_videos')->where('user_email',$userName)->column('uploaded_video_name'); 
+        $data = ['count'=>count($has),'video_list'=>$has];
+        return ['data'=>$data,'code'=>$code,'message'=>$message];
+    }
+    public function playPoster($userName=''){
+        $code = -1;
+        $message = '';
+        $hasTitle = Db::table('uploaded_videos')->where('user_email',$userName)->column('video_title'); 
+        $hasPoster = Db::table('uploaded_videos')->where('user_email',$userName)->column('video_poster');
+        $data = ['count'=>count($hasTitle),'video_title'=>$hasTitle,'video_poster'=>$hasPoster];
         return ['data'=>$data,'code'=>$code,'message'=>$message];
     }
 }
