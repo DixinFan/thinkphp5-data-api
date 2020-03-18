@@ -10,7 +10,7 @@ class Index extends Controller
         $data = Db::name('users')->find();
         return ['data'=>$data,'code'=>1,'message'=>'操作完成'];
     }
-    public function doLogin($userName='',$password='')
+    public function doLogin( $userName='',$password='')
     {   
         $has = db('users')->where('user_email', $userName)->find();
         $data = '';
@@ -31,22 +31,24 @@ class Index extends Controller
         }
         return ['data'=>$data,'code'=>$code,'message'=>$message];
     }
-    public function uploadVideo($userName=''){
+    public function uploadVideo($UserName='',$VideoTitle=''){
         $data = '';
         $code = -1;
         $message = '';
-        $file = request()->file('video');
-        $info = $file->move('../public/uploads');
-        if($info){
-            $code = 200;
-            $data = ['uploaded_video_name' => $info->getSaveName(), 'user_email' => $userName];
+        $video_file = request()->file('video');
+        $image_file = request()->file('image');
+        $video_info = $video_file->move('../public/uploads');
+        $image_info = $image_file->move('../public/uploads');
+        if($video_info && $image_info){
+            $data = ['uploaded_video_name' => $video_info->getSaveName(), 'user_email' => $UserName, 'video_title' => $VideoTitle, 'video_poster'=>$image_info->getSaveName()];
             Db::name('uploaded_videos')
                 ->data($data)
                 ->insert();
-            $message = '上传成功';
+            $message = '上传成功'; 
         }else{
             $code = 401;
-            $message = $file->getError();
+            $message = '上传失败';
+            // $message = $file->getError();
         }
         return ['data'=>$data,'code'=>$code,'message'=>$message];
     }
@@ -64,5 +66,9 @@ class Index extends Controller
         $hasPoster = Db::table('uploaded_videos')->where('user_email',$userName)->column('video_poster');
         $data = ['count'=>count($hasTitle),'video_title'=>$hasTitle,'video_poster'=>$hasPoster];
         return ['data'=>$data,'code'=>$code,'message'=>$message];
+    }
+    public function testPython(){
+        $output = shell_exec("ls");
+        return $output;
     }
 }
