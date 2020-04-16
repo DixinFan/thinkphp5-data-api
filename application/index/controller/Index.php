@@ -44,6 +44,7 @@ class Index extends Controller
             Db::name('uploaded_videos')
                 ->data($data)
                 ->insert();
+            $code = 200;
             $message = '上传成功'; 
         }else{
             $code = 401;
@@ -52,19 +53,33 @@ class Index extends Controller
         }
         return ['data'=>$data,'code'=>$code,'message'=>$message];
     }
-    public function playVideo($userName=''){
-        $code = -1;
-        $message = '';
-        $has = Db::table('uploaded_videos')->where('user_email',$userName)->column('uploaded_video_name'); 
-        $data = ['count'=>count($has),'video_list'=>$has];
-        return ['data'=>$data,'code'=>$code,'message'=>$message];
-    }
-    public function playPoster($userName=''){
+    // public function playVideo($userName=''){
+    //     $code = -1;
+    //     $message = '';
+    //     $has = Db::table('uploaded_videos')->where('user_email',$userName)->column('uploaded_video_name'); 
+    //     if($has){
+    //         $code = 200;
+    //         $message = '播放成功';
+    //     }else{
+    //         $code = 401;
+    //         $message = '播放失败';
+    //     }
+    //     $data = ['count'=>count($has),'video_list'=>$has];
+    //     return ['data'=>$data,'code'=>$code,'message'=>$message];
+    // }
+    public function listPoster($userName=''){
         $code = -1;
         $message = '';
         $hasTitle = Db::table('uploaded_videos')->where('user_email',$userName)->column('video_title'); 
         $hasPoster = Db::table('uploaded_videos')->where('user_email',$userName)->column('video_poster');
         $hasVideo = Db::table('uploaded_videos')->where('user_email',$userName)->column('uploaded_video_name');
+        if($hasTitle){
+            $code = 200;
+            $message = '请求已上传视频列表成功';
+        }else{
+            $code = 401;
+            $message = '请求已上传视频列表失败';
+        }
         $data = ['count'=>count($hasTitle),'VideoTitle'=>$hasTitle,'VideoPoster'=>$hasPoster,'VideoName'=>$hasVideo];
         return ['data'=>$data,'code'=>$code,'message'=>$message];
     }
@@ -88,7 +103,7 @@ class Index extends Controller
         }
         return ['data'=>$data,'code'=>$code,'message'=>$message];
     }
-    public function playRecognitedPoster($userName=''){
+    public function listRecognitedPoster($userName=''){
         $code = -1;
         $message = '';
         $hasTitle = Db::name('uploaded_videos')
