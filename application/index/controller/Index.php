@@ -10,7 +10,7 @@ class Index extends Controller
         $data = Db::name('users')->find();
         return ['data'=>$data,'code'=>1,'message'=>'操作完成'];
     }
-    public function doLogin( $userName='',$password='')
+    public function doLogin($userName='',$password='')
     {   
         $has = db('users')->where('user_email', $userName)->find();
         $data = '';
@@ -144,5 +144,18 @@ class Index extends Controller
         $string = file_get_contents($fileName);
         $data = json_decode($string,true);
         return ['data'=>$data,'code'=>$code,'message'=>$message];        
+    }
+    public function doRegister($UserName='',$Password='')
+    {   
+        $data = '';
+        $code = -1;
+        $message = '';
+        $data = ['user_email' => $UserName, 'user_pwd' => $Password];
+        Db::name('users')
+        ->data($data)
+        ->insert();
+        $code = 200;
+        $message = '上传成功';
+        return ['data'=>$data,'code'=>$code,'message'=>$message];
     }
 }
